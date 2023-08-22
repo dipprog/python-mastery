@@ -1,22 +1,41 @@
 # reader.py
 
 import csv
-
-def read_csv_as_dicts(filename, types):
-    '''
-    Read a CSV file with column type conversion
-    '''
-    records = []
-    with open(filename, 'r') as f:
-        rows = csv.reader(f)
-        headers = next(rows)
-        for row in rows:
-            record = {name: func(val) for name, func, val in zip(headers, types, row)}
-            records.append(record)
-
-    return records
-
+from abc import ABC, abstractmethod
 from collections.abc import Sequence
+
+class CSVParser(ABC):
+    def parse(self, filename):
+        records = []
+        with open(filename) as f:
+            rows = csv.reader(f)
+            headers = next(rows)
+            for row in rows:
+                record = self.make_record(headers, row)
+                records.append(record)
+        return records
+    
+    @abstractmethod
+    def make_record(self, headers, row):
+        pass
+
+
+class DictCSVParser(CSVParser):
+    def __init__(self, types):
+        self.types = types
+
+    def make_record(self, headers, row):
+        return {name: func(val) for name, func, val in zip(headers, self.types, row)}
+
+
+class InstanceCSVParser(CSVParser):
+    def __init__(self, cls):
+        self.cls = cls
+
+    def make_record(self, headers, row):
+        return self.cls.from_row(row)
+    
+
 class DataCollection(Sequence):
     def __init__(self, headers):
         for col_name in headers:
@@ -45,24 +64,28 @@ def read_csv_as_columns(filename, types):
     with open(filename, 'r') as f:
         rows = csv.reader(f)
         headers = next(rows)
-        data = DataCollection(headers)
+        records = DataCollection(headers)
         for row in rows:
             record = {name:func(val) for name, func, val in zip(headers, types, row)}
-            data.append(record)
+            records.append(record)
 
-    return data
+    return records
+
+
+def read_csv_as_dicts(filename, types):
+    '''
+    Read a CSV file with column type conversion
+    '''
+    parser = DictCSVParser(types)
+    parser.parse(filename)
+
 
 def read_csv_as_instances(filename, cls):
     '''
     Read a CSV file into a list of instances
     '''
-    records = []
-    with open(filename) as f:
-        rows = csv.reader(f)
-        headers = next(rows)
-        for row in rows:
-            records.append(cls.from_row(row))
-    return records
+    parser = InstanceCSVParser(cls)
+    parser.parse(filename)
 
 
 

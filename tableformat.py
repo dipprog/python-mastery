@@ -19,15 +19,19 @@
 #     for record in records:
 #         print(' '.join('%10s' % getattr(record, fieldname) for fieldname in fields))
 
+from abc import ABC, abstractmethod
+
 class FormatError(Exception):
     pass
 
-class TableFormatter:
+class TableFormatter(ABC):
+    @abstractmethod
     def headings(self, headers):
-        raise NotImplementedError()
+        pass
     
+    @abstractmethod
     def row(self, rowdata):
-        raise NotImplementedError()
+        pass
     
 class TextTableFormatter(TableFormatter):
     def headings(self, headers):
@@ -56,6 +60,9 @@ class HTMLTableFormatter(TableFormatter):
         print('</tr>')
 
 def print_table(records, fields, formatter):
+    if not isinstance(formatter, TableFormatter):
+        raise TypeError('Expected a TableFormatter')
+    
     formatter.headings(fields)
     for r in records:
         rowdata =  [getattr(r, fieldname) for fieldname in fields]

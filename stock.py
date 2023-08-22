@@ -10,6 +10,12 @@ class Stock:
         self.shares = shares
         self.price = price
 
+    def __repr__(self):
+        return f"Stock('{self.name}', {self.shares}, {self.price})"
+    
+    def __eq__(self, other):
+        return isinstance(other, Stock) and ((self.name, self.shares, self.price) == (other.name, other.shares, other.price))
+
     @property
     def cost(self):
         return self.shares * self.price
@@ -17,11 +23,6 @@ class Stock:
     @property 
     def shares(self):
         return self._shares
-    
-    @property 
-    def price(self):
-        return self._price
-    
     @shares.setter
     def shares(self, value):
         if not isinstance(value, self._types[1]):
@@ -30,6 +31,9 @@ class Stock:
             raise ValueError('shares must be >= 0')
         self._shares = value
 
+    @property 
+    def price(self):
+        return self._price
     @price.setter
     def price(self, value):
         if not isinstance(value, self._types[2]):
@@ -46,6 +50,8 @@ class Stock:
     def from_row(cls, row):
         values = [func(val) for func, val in zip(cls._types, row)]
         return cls(*values)
+
+
 
 import csv
 def read_portfolio(filename):
