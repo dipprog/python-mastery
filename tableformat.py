@@ -59,6 +59,16 @@ class HTMLTableFormatter(TableFormatter):
         print(' '.join(f'<td>{d}</td>' for d in rowdata), end=' ')
         print('</tr>')
 
+class ColumnFormatMixin:
+    formats = []
+    def row(self, rowdata):
+        rowdata = [(fmt % d) for fmt, d in zip(self.formats, rowdata)]
+        super().row(rowdata)
+
+class UpperHeadersMixin:
+    def headings(self, headers):
+        super().headings([h.upper() for h in headers])
+
 def print_table(records, fields, formatter):
     if not isinstance(formatter, TableFormatter):
         raise TypeError('Expected a TableFormatter')
@@ -68,15 +78,20 @@ def print_table(records, fields, formatter):
         rowdata =  [getattr(r, fieldname) for fieldname in fields]
         formatter.row(rowdata)
 
-def create_formatter(fmt):
-    formatter = {
-        'text': TextTableFormatter(),
-        'csv': CSVTableFormatter(),
-        'html': HTMLTableFormatter()
-    }
-    if fmt in formatter:
-        return formatter[fmt]
+def create_formatter(fmt, column_formats=None, upper_headers=False):
+    if fmt == 'text':
+        formatter_cls = TextTableFormatter
+    elif fmt == 'csv':
+        formatter_cls = CSVTableFormatter
+    elif fmt == 'html':
+        formatter_cls = HTMLTableFormatter
     else:
-        raise FormatError('Invalid format')
+        raise FormatError('Unknown format %s' % fmt)
     
-
+    if column_formats:
+        class formatter_cls(ColumnFormatMixin, formatter_cls):
+            formats = column_formats
+    if upper_headers:
+        class formatter_cls(UpperHeadersMixin, formatter_cls):
+            pass
+    return formatter_cls()

@@ -25,7 +25,7 @@ class DictCSVParser(CSVParser):
         self.types = types
 
     def make_record(self, headers, row):
-        return {name: func(val) for name, func, val in zip(headers, self.types, row)}
+        return { name: func(val) for name, func, val in zip(headers, self.types, row) }
 
 
 class InstanceCSVParser(CSVParser):
@@ -77,7 +77,7 @@ def read_csv_as_dicts(filename, types):
     Read a CSV file with column type conversion
     '''
     parser = DictCSVParser(types)
-    parser.parse(filename)
+    return parser.parse(filename)
 
 
 def read_csv_as_instances(filename, cls):
@@ -85,7 +85,7 @@ def read_csv_as_instances(filename, cls):
     Read a CSV file into a list of instances
     '''
     parser = InstanceCSVParser(cls)
-    parser.parse(filename)
+    return parser.parse(filename)
 
 
 
