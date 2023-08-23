@@ -1,4 +1,5 @@
 # stock.py
+import validate
 
 class Stock:
     _types = (str, int, float)
@@ -25,22 +26,14 @@ class Stock:
         return self._shares
     @shares.setter
     def shares(self, value):
-        if not isinstance(value, self._types[1]):
-            raise TypeError(f'Expected {self._types[1].__name__}')
-        if value <  0:
-            raise ValueError('shares must be >= 0')
-        self._shares = value
+        self._shares = validate.PositiveInteger.check(value)
 
     @property 
     def price(self):
         return self._price
     @price.setter
     def price(self, value):
-        if not isinstance(value, self._types[2]):
-            raise TypeError(f'Expected {self._types[2].__name__}')
-        if value <  0:
-            raise ValueError('price must be >= 0')
-        self._price = value
+        self._price = validate.PositiveFloat.check(value)
 
     def sell(self, nshares):
         if nshares > 0 and nshares <= self.shares:
