@@ -4,7 +4,9 @@ import validate
 class Stock:
     _types = (str, int, float)
 
-    __slots__ = ('name', '_shares', '_price')
+    name = validate.String()
+    shares = validate.PositiveInteger()
+    price = validate.PositiveFloat()
 
     def __init__(self, name, shares, price):
         self.name = name
