@@ -2,6 +2,7 @@
 
 import csv
 from collections.abc import Sequence
+from stock import Stock
 
 
 class DataCollection(Sequence):
@@ -39,8 +40,9 @@ def read_csv_as_columns(filename, types):
 
     return records
 
+from typing import Iterable
 
-def convert_csv(lines, converter_func, *, headers=None):
+def convert_csv(lines: Iterable, converter_func: function, *, headers: list|None = None) -> list:
     '''
     Convert lines of CSV data into a list of container defined by converter_func
     '''
@@ -49,8 +51,7 @@ def convert_csv(lines, converter_func, *, headers=None):
         headers = next(rows)
     return list(map(lambda row: converter_func(headers, row), rows))
 
-
-def csv_as_dicts(lines, types, *, headers = None):
+def csv_as_dicts(lines: Iterable, types: list, *, headers:list|None = None) ->list[dict]:
     '''
     Convert lines of CSV data into a list of dictionaries
     '''
@@ -62,16 +63,14 @@ def csv_as_instances(lines, cls, *, headers=None):
     '''
     return convert_csv(lines, lambda headers, row: cls.from_row(row),headers=headers)
         
-
-def read_csv_as_dicts(filename, types, *, headers=None):
+def read_csv_as_dicts(filename: str, types: list, *, headers: list|None = None) -> list[dict]:
     '''
     Read CSV data into a list of dictionaries with optional type conversion
     '''
     with open(filename, 'rt') as file:
         return csv_as_dicts(file, types, headers=headers)
     
-
-def read_csv_as_instances(filename, cls, *, headers=None):
+def read_csv_as_instances(filename: str, cls: Stock, *, headers: list|None = None) -> list[Stock]:
     '''
     Read a CSV data into a list of instances
     '''
