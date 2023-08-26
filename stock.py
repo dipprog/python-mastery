@@ -3,7 +3,6 @@ import validate
 
 class Stock:
     _types = (str, int, float)
-
     name = validate.String()
     shares = validate.PositiveInteger()
     price = validate.PositiveFloat()
