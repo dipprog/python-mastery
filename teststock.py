@@ -40,6 +40,7 @@ class TestStock(unittest.TestCase):
         t = stock.Stock('GOOG', 100, 490.10)
         self.assertTrue(s == t)
 
+    # Test for failure conditions
     def test_shares_badtype(self):
         s = stock.Stock('GOOG', 100, 490.10)
         with self.assertRaises(TypeError):
@@ -48,7 +49,7 @@ class TestStock(unittest.TestCase):
     def test_shares_badvalue(self):
         s = stock.Stock('GOOG', 100, 490.10)
         with self.assertRaises(ValueError):
-            s.shares = -3
+            s.shares = -55
 
     def test_price_badtype(self):
         s = stock.Stock('GOOG', 100, 490.10)
