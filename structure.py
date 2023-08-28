@@ -1,17 +1,9 @@
 # structure.py
 
-import sys
-
 class Structure:
     _fields = tuple()
-    @staticmethod
-    def _init():
-        locs = sys._getframe(1).f_locals
-        self = locs.pop('self')
-        for name, val in locs.items():
-            setattr(self, name, val)
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f"{type(self).__name__}({', '.join(repr(getattr(self, name)) for name in self._fields)})"
     
     def __setattr__(self, name, value):
@@ -21,7 +13,11 @@ class Structure:
             raise AttributeError('No attribute %s' % name)
 
     @classmethod
-    def set_fields(cls):
-        import inspect
-        sig = inspect.signature(cls)
-        cls._fields = tuple(sig.parameters)
+    def create_init(cls):
+        argstr = ', '.join(cls._fields)
+        init_code = f'def __init__(self, {argstr}):\n'
+        for name in cls._fields:
+            init_code += f'    self.{name} = {name}\n'
+        locs = { }
+        exec(init_code, locs)
+        cls.__init__ = locs['__init__']
