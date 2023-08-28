@@ -19,3 +19,9 @@ class Structure:
             super().__setattr__(name, value)
         else:
             raise AttributeError('No attribute %s' % name)
+
+    @classmethod
+    def set_fields(cls):
+        import inspect
+        sig = inspect.signature(cls)
+        cls._fields = tuple(sig.parameters)
