@@ -85,4 +85,6 @@ class ValidatedFunction:
 
 # Signatures of functions(its name, parameters and return its type) can be bound to *args and **kwargs(passed when calling the function)
 
+# Use 'bind()' method of 'signature' objects to bind function arguments to argument names.
+
 # Help performing all error checking
