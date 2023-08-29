@@ -2,6 +2,8 @@
 
 from structure import Structure
 
+from validate import validated, PositiveInteger
+
 class Stock(Structure):
     _fields = ('name', 'shares', 'price')
 
@@ -9,7 +11,8 @@ class Stock(Structure):
     def cost(self):
         return self.shares * self.price
     
-    def sell(self, nshares):
+    @validated
+    def sell(self, nshares: PositiveInteger):
         self.shares -= nshares
 
 Stock.create_init()
