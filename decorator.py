@@ -21,8 +21,10 @@ def logged(func):
 # Whenever we see a decorader syntax, just remember that a function is getting wrapped.
 
 # A decorator that reports execution time
+from functools import wraps
 import time
 def timethis(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.time()
         r = func(*args, **kwargs)
@@ -33,6 +35,22 @@ def timethis(func):
 
 @timethis
 def check():
+    '''
+    List creation
+    '''
     l = []
     for i in range(10000000):
         l.append(i)
+
+
+# Decorator with Args
+# Logging with a custom message
+def logmsg(message):
+    def logged(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            print(message.format(name=func.__name__))
+            return func(*args, **kwargs)
+        return wrapper
+    return logged
+
