@@ -57,3 +57,32 @@ class PositiveFloat(Float, Positive):
 class NonEmptyString(String, NonEmpty):
     pass
 
+from inspect import signature
+
+class ValidatedFunction:
+    def __init__(self, func):
+        self._func = func
+        self._signature = signature(func)
+        self._annotations = dict(func.__annotations__)
+        self._retcheck = self._annotations.pop('return', None) # Return check
+
+    def __call__(self, *args, **kwargs):
+
+        bound = self._signature.bind(*args, **kwargs)
+
+        for name, val in self._annotations.items():
+            val.check(bound.arguments[name])
+        
+        result = self._func(*args, **kwargs)
+
+        if self._retcheck:
+            self._retcheck.check(result)
+
+        return result
+
+        
+# 'signature' from 'inspect' module are used to get details about functions in a more useful form
+
+# Signatures of functions(its name, parameters and return its type) can be bound to *args and **kwargs(passed when calling the function)
+
+# Help performing all error checking
